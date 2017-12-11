@@ -68,27 +68,30 @@ Theta2_grad = zeros(size(Theta2));
 Y = eye(num_labels)(y, :);
 A1 = [ones(m, 1), X];
 
-Z2 = Theta1 * A1';
+Z2 = A1 * Theta1';
 A2 = sigmoid(Z2);
-A2 = [ones(size(A2, 2), 1), A2'];
+A2 = [ones(size(A2, 1), 1), A2];
 
-Z3 = Theta2 * A2';
+Z3 = A2 * Theta2';
 A3 = sigmoid(Z3);
 
-J = (1/m) * sum(sum(log(A3)' .* -Y - log(1 - A3)' .* (1 - Y)));
+J = (1/m) * sum(sum(log(A3) .* -Y - log(1 - A3) .* (1 - Y)));
 J += (lambda / (2 * m)) * (sum(sum(Theta1(:, 2:end).^2))+ sum(sum(Theta2(:, 2:end).^2)));
 
 %{
   PART - 2
 %}
-D3 = A3' - Y;
-D2 =  Theta2(:, 2:end)' * D3' .* sigmoidGradient(Z2);
+D3 = (A3 - Y);
+D2 = D3 * Theta2(:, 2:end) .* sigmoidGradient(Z2);
 
-delta1 = D2 * A1';
-delta2 = D3' * A2';
+Delta1 = D2' * A1;
+Delta2 = D3' * A2;
 
-Theta1_grad = (1/m) * delta1;
-Theta2_grad = (1/m) * delta2;
+Theta1(:, 1) = 0;
+Theta2(:, 1) = 0;
+
+Theta1_grad = (1/m) * Delta1 + (lambda/m) * Theta1;
+Theta2_grad = (1/m) * Delta2 + (lambda/m) * Theta2;
 
 % -------------------------------------------------------------
 

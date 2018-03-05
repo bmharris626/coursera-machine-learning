@@ -20,13 +20,13 @@ idx = zeros(size(X,1), 1);
 %
 % Note: You can use a for-loop over the examples to compute this.
 %
+C = zeros(size(X, 1), K);
 
+for i = 1:K
+  C(:, i) = sum(abs(X - centroids(i, :)).^2, 2);
+endfor
 
-
-
-
-
-
+[minval, idx] = min(C, [], 2);
 % =============================================================
 
 end
